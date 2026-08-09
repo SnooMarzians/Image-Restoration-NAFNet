@@ -1,0 +1,105 @@
+# general settings
+name: NAFNet-width32-CombinedLoss-KLA
+model_type: ImageRestorationModel
+scale: 2
+num_gpu: 1
+manual_seed: 42
+
+# dataset and data loader settings
+datasets:
+  train:
+    name: KLA-Train
+    type: PairedNpyDataset
+    dataroot_gt: ../dataset/train/train/GT
+    dataroot_lq: ../dataset/train/train/NoisyLR
+    filename_tmpl: '{}'
+    io_backend:
+      type: disk
+
+    gt_size: 256
+    use_flip: true
+    use_rot: true
+
+    # data loader
+    use_shuffle: true
+    num_worker_per_gpu: 4
+    batch_size_per_gpu: 16
+    dataset_enlarge_ratio: 1
+    prefetch_mode: ~
+
+  val:
+    name: KLA-Val
+    type: PairedNpyDataset
+    dataroot_gt: ../dataset/train/train/GT
+    dataroot_lq: ../dataset/train/train/NoisyLR
+    io_backend:
+      type: disk
+
+# network structures
+network_g:
+  type: NAFNetSR
+  img_channel: 1
+  width: 32
+  enc_blk_nums: [2, 2, 4, 8]
+  middle_blk_num: 1
+  dec_blk_nums: [2, 2, 2, 2]
+  up_scale: 2
+
+# path
+path:
+  pretrain_network_g: ~
+  strict_load_g: true
+  resume_state: ~
+
+# training settings
+train:
+  optim_g:
+    type: AdamW
+    lr: !!float 1e-3
+    weight_decay: !!float 0
+    betas: [0.9, 0.9]
+
+  scheduler:
+    type: CosineAnnealingRestartLR
+    periods: [38600]
+    restart_weights: [1]
+    eta_min: !!float 1e-6
+
+  total_iter: 38600
+  warmup_iter: -1 # no warmup
+
+  # losses
+  pixel_opt:
+    type: CombinedPSNRSSIMLoss
+    loss_weight: 1.0
+    ssim_weight: 0.5
+    reduction: mean
+
+# validation settings
+val:
+  val_freq: 2000
+  save_img: false
+
+  metrics:
+    psnr:
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
+
+# logging settings
+logger:
+  print_freq: 100
+  save_checkpoint_freq: 2000
+  use_tb_logger: true
+  wandb:
+    project: ~
+    resume_id: ~
+
+# dist training settings
+dist_params:
+  backend: nccl
+  port: 29500
