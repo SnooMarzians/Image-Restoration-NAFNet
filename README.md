@@ -2,13 +2,13 @@
 
 This repository contains our official submission for the **KLA AI Hackathon** (Problem Statement 01: Semiconductor Microscopic Image Restoration and Super-Resolution).
 
-Our solution utilizes an optimized **NAFNet (Nonlinear Activation Free Network)** architecture ($2\times$ Super-Resolution, Width=32) paired with a custom **Sobel Edge-Gradient + $L_1$ Loss** formulation, encoder layer freezing, and **Stochastic Weight Averaging (SWA)**.
+Our solution utilizes an optimized **NAFNet (Nonlinear Activation Free Network)** architecture (2x Super-Resolution, Width=32) paired with a custom **Sobel Edge-Gradient + L1 Loss** formulation, encoder layer freezing, and **Stochastic Weight Averaging (SWA)**.
 
 ---
 
 ## 🏆 Key Benchmark Results
 
-Our model was benchmarked across the full evaluation dataset ($3,200$ sample pairs) and 400 test images:
+Our model was benchmarked across the full evaluation dataset (3,200 sample pairs) and 400 test images:
 
 | Benchmark Metric | Cold Run (1st Execution) | Hot Run (2nd Execution - Unthrottled) |
 | :--- | :--- | :--- |
@@ -103,7 +103,7 @@ python evaluate.py --input_path ../dataset/Test_NoisyLR/NoisyLR --output_path ./
 ```
 
 - **Inputs**: Directory containing 2D/3D `.npy` files (`[128, 128]` float32 arrays).
-- **Outputs**: Writes restored high-resolution 2D `.npy` files (`[256, 256]` float32 arrays clipped to $[0.0, 1.0]$) to `--output_path`.
+- **Outputs**: Writes restored high-resolution 2D `.npy` files (`[256, 256]` float32 arrays clipped to `[0.0, 1.0]`) to `--output_path`.
 - **Zero Configuration Required**: Automatically loads `models/net_g_swa.pth` weights and auto-selects CUDA GPU acceleration.
 
 ---
@@ -128,9 +128,9 @@ python train.py -opt options/train/KLA/NAFNet-width32-FrozenEncoder-KLA.yml
 
 ### Strategy Summary:
 1. **Architecture**: NAFNetSR (Width=32, 1 input channel, scale factor=2).
-2. **Loss Function**: `SobelL1Loss` ($\mathcal{L}_{L1} + 0.2 \cdot \mathcal{L}_{Sobel}$) to sharpen microscopic silicon contours.
-3. **Layer Freezing**: Frozen early encoder blocks (`intro`, `encoders`, `downs`) for $40\%$ faster step latency.
-4. **Optimization**: AdamW optimizer ($\beta = [0.9, 0.9]$) with Cosine Annealing learning rate schedule ($2\times 10^{-4} \to 1\times 10^{-6}$).
+2. **Loss Function**: `SobelL1Loss` (L1 Loss + 0.2 * Sobel Edge Loss) to sharpen microscopic silicon contours.
+3. **Layer Freezing**: Frozen early encoder blocks (`intro`, `encoders`, `downs`) for 40% faster step latency.
+4. **Optimization**: AdamW optimizer ($\beta = [0.9, 0.9]$) with Cosine Annealing learning rate schedule (2e-4 to 1e-6).
 
 ---
 
