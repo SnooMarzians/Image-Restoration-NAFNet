@@ -78,8 +78,8 @@ submission/
 
 1. **Clone the Repository**:
    ```bash
-   git clone <YOUR_GITHUB_REPO_URL>
-   cd submission
+   git clone https://github.com/SnooMarzians/Image-Restoration-NAFNet.git
+   cd Image-Restoration-NAFNet
    ```
 
 2. **Install Dependencies**:
