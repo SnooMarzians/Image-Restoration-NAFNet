@@ -50,6 +50,7 @@ Our final SWA model (`net_g_swa.pth`) was benchmarked across all **3,200 dataset
 ```
 submission/
 │
+├── run.py                       # Main required entry script (python run.py <input-dir> <output-dir>)
 ├── evaluate.py                  # Standalone zero-edit evaluation & latency profiling script
 ├── check_metrics.py             # Accuracy & PSNR/SSIM benchmarking script across dataset
 ├── train.py                     # Wrapper script to reproduce training from scratch
@@ -89,22 +90,22 @@ submission/
 
 ---
 
-## 🚀 Running Inference (Evaluation Script)
+## 🚀 Running Inference (Entry Script: `run.py`)
 
-The evaluators can run standalone inference on any directory of noisy low-resolution `.npy` files using `evaluate.py`:
+The solution runs using the official KLA entry command:
 
 ```bash
-python evaluate.py --input_path <path_to_test_npy_folder> --output_path <path_to_output_dir>
+python run.py <input-dir> <output-dir>
 ```
 
 ### Example Usage:
 ```bash
-python evaluate.py --input_path ../dataset/Test_NoisyLR/NoisyLR --output_path ./Restored_Outputs
+python run.py ../dataset/Test_NoisyLR/NoisyLR ./Restored_Outputs
 ```
 
 - **Inputs**: Directory containing 2D/3D `.npy` files (`[128, 128]` float32 arrays).
-- **Outputs**: Writes restored high-resolution 2D `.npy` files (`[256, 256]` float32 arrays clipped to `[0.0, 1.0]`) to `--output_path`.
-- **Zero Configuration Required**: Automatically loads `models/net_g_swa.pth` weights and auto-selects CUDA GPU acceleration.
+- **Outputs**: Writes restored high-resolution 2D `.npy` files (`[256, 256]` float32 arrays clipped to `[0.0, 1.0]`) with matching filenames to `<output-dir>`.
+- **Zero Configuration Required**: Automatically loads `models/net_g_swa.pth` weights and auto-selects CUDA GPU acceleration without requiring internet connection or manual setup.
 
 ---
 
